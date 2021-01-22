@@ -2,6 +2,7 @@ import pygame
 import random
 import time
 import math
+import pyautogui
 pygame.init()
 pygame.mixer.init()
 display=pygame.display.set_mode((700,700),pygame.NOFRAME)
@@ -30,7 +31,7 @@ player1_score=0
 player2_score=0
 play=False
 # _______________
-pygame.mixer.music.load('1.mp3')
+# pygame.mixer.music.load('1.mp3')
 clock=pygame.time.Clock()
 # _______________
 def distains(x1,y1,x2,y2):
@@ -41,8 +42,8 @@ def player1(boll_position_x,boll_position_y,line_position_x,line_start_y,line_en
     global bollX_V,player1_score,bollX,bollY_V
 
     if distains(boll_position_x,boll_position_y,line_position_x,boll_position_y)<=line_width and (boll_position_y>=line_start_y and boll_position_y<=line_end_y):
-        pygame.mixer.music.load('2.1.mp3')
-        pygame.mixer.music.play()
+        # pygame.mixer.music.load('2.1.mp3')
+        # pygame.mixer.music.play()
         bollY_V=random.randint(-10,10)
         bollX_V*=-1  
         bollX-=10
@@ -52,8 +53,8 @@ def player2(boll_position_x,boll_position_y,line_position_x,line_start_y,line_en
     global bollX_V,bollX,bollY_V
 
     if distains(boll_position_x,boll_position_y,line_position_x,boll_position_y)<=line_width-5 and (boll_position_y>=line_start_y and boll_position_y<=line_end_y):
-        pygame.mixer.music.load('2.1.mp3')
-        pygame.mixer.music.play()
+        # pygame.mixer.music.load('2.1.mp3')
+        # pygame.mixer.music.play()
         bollY_V=random.randint(-10,10)
         bollX_V*=-1  
         bollX+=10
@@ -71,15 +72,15 @@ def gameloop():
         moues=pygame.mouse.get_pos()
         display.fill((0,0,0))
         if bollX>700-10:
-            pygame.mixer.music.load('1.mp3')
-            pygame.mixer.music.play()
+            # pygame.mixer.music.load('1.mp3')
+            # pygame.mixer.music.play()
             player2_score+=1
             reset()
             gameStart()
-
+            # bollX*=-1
         if bollX<10:
-            pygame.mixer.music.load('1.mp3')
-            pygame.mixer.music.play()
+            # pygame.mixer.music.load('1.mp3')
+            # pygame.mixer.music.play()
             player1_score+=1
             reset()
             gameStart()
@@ -103,37 +104,42 @@ def gameloop():
                 if event.key==pygame.K_ESCAPE:
                     running=False
                     quit()
-                elif event.key==pygame.K_w:
-                    player1Y_V=-player_speed
-                elif event.key==pygame.K_s:
-                    player1Y_V=player_speed
-                elif event.key==pygame.K_UP:
-                    player2Y_V=-player_speed
-                elif event.key==pygame.K_DOWN:
-                    player2Y_V=player_speed
-            elif event.type==pygame.KEYUP:
-                if event.key==pygame.K_w:
-                    player1Y_V=0
-                elif event.key==pygame.K_s:
-                    player1Y_V=0
-                elif event.key==pygame.K_UP:
-                    player2Y_V=0
-                elif event.key==pygame.K_DOWN:
-                    player2Y_V=0
         bollX+=bollX_V
         bollY+=bollY_V
         pygame.draw.rect(display, ((255,255,255)), (bollX,bollY,17,17), 0)
-        pygame.draw.line(display, ((255,255,255)), (player1X,player1Y),(player1X,player1Y+100),5)
         pygame.draw.line(display, ((255,255,255)), (player2X,player2Y),(player2X,player2Y+100), 5)
         pygame.draw.line(display, ((255,255,255)), (350,0), (350,700),2)
+        pygame.draw.line(display, ((255,255,255)), (player1X,player1Y),(player1X,player1Y+100),5)
+        if bollX<350:
+            if ((bollY-50)-player1Y)<=0:
+                player1Y_V=-10
+            if ((bollY-50)-player1Y)>=0:
+                player1Y_V=10
+            if ((bollY-50)-player1Y)==0:
+                player1Y_V=0
+            if ((bollY-50)-player1Y)==0:
+                player1Y_V=0
+        if bollX>=350:
+            player1Y_V=0
+
+        if bollX>350:
+            if ((bollY-50)-player2Y)<=0:
+                player2Y_V=-10
+            if ((bollY-50)-player2Y)>=0:
+                player2Y_V=10
+            if ((bollY-50)-player2Y)==0:
+                player2Y_V=0
+            if ((bollY-50)-player2Y)==0:
+                player2Y_V=0
+        if bollX<=350:
+            player2Y_V=0
+
         player1Y+=player1Y_V
-        # ___________________________for mouse control_________________
-        # player2Y=moues[1]  # player 2 mouse controll
-        # player1Y=moues[1]  # player 1 mouse controll
-        # ______________________________________________________________
         player2Y+=player2Y_V
+
         player1(bollX,bollY,player2X,player2Y,player2Y+100,19)
         player2(bollX,bollY,player1X,player1Y,player1Y+100,19)
+
         text_screen(f'{player2_score}',((255,255,255)),270,10)
         text_screen(f'{player1_score}',((255,255,255)),390,10)
         clock.tick(60)
@@ -142,8 +148,8 @@ def gameloop():
 def gameOver(windata=0):
     running=True
     global score,player1_score,player2_score
-    pygame.mixer.music.load('1.mp3')
-    pygame.mixer.music.play()
+    # pygame.mixer.music.load('1.mp3')
+    # pygame.mixer.music.play()
     while running:
         display.fill((0,0,0))
         for event in pygame.event.get():
@@ -152,6 +158,7 @@ def gameOver(windata=0):
                 quit()
             elif event.type==pygame.KEYUP:
                 if event.key==pygame.K_RETURN:
+                    # running=False 
                     player1_score=0
                     player2_score=0
                     reset()
@@ -222,6 +229,8 @@ def gameStart():
         pygame.draw.line(display, ((255,255,255)), (player2X,player2Y),(player2X,player2Y+100),5)
         clock.tick(10)
         pygame.display.update()
+        time.sleep(1)
+        pyautogui.press('Enter')
 
 # _____________________________________________________________________________________________
 def reset():
